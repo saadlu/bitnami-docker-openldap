@@ -307,9 +307,11 @@ EOF
 #########################
 ldap_add_custom_ldifs() {
     info "Loading custom LDIF files..."
+
     warn "Ignoring LDAP_USERS, LDAP_PASSWORDS, LDAP_USER_DC and LDAP_GROUP environment variables..."
-    for ldif_file in $(find "$LDAP_CUSTOM_LDIF_DIR" -maxdepth 1 -type f -iname '*.ldif' -print0 | sort -z | xargs --null)
+    for ldif_file in $(find "$LDAP_CUSTOM_LDIF_DIR" -maxdepth 1 -type f,l -iname '*.ldif' -print0 | sort -z | xargs --null)
     do
+        info "loading $ldif_file"
         debug_execute ldapadd -f $ldif_file -H 'ldapi:///' -D "$LDAP_ADMIN_DN" -w "$LDAP_ADMIN_PASSWORD"
     done
 }
